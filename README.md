@@ -1,0 +1,2 @@
+# RogueGPT-Uncensored
+Its Uncesored.
