@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maverick</title> <link rel="icon" type="image/png" href="/images/logo.png">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Maverick</h1> <p>Created by <%= creatorName %></p>
+            <a href="/" class="new-chat-btn">New Chat</a>
+        </div>
+        <div class="chat-box" id="chat-box">
+            <% chatHistory.forEach(message => { %>
+                <div class="chat-message-wrapper role-<%= message.role %>">
+                    <div class="chat-message">
+                        <% if (message.role === 'assistant') { %>
+                            <%- marked.parse(message.content) %>
+                        <% } else { %>
+                            <p><%= message.content %></p>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+
+            <div class="chat-message-wrapper role-assistant" id="loading-dots" style="display: none;">
+                <div class="chat-message">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <form action="/chat" method="post" class="chat-form" id="chat-form">
+            <input type="hidden" name="chatId" value="<%= chatId %>">
+            <div class="input-wrapper">
+                <input type="text" id="message-input" name="message" placeholder="Message Maverick..." required autocomplete="off">
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Your script remains the same
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const loadingDots = document.getElementById('loading-dots');
+        const chatBox = document.getElementById('chat-box');
+
+        chatForm.addEventListener('submit', function(event) {
+            const userMessage = messageInput.value.trim();
+            if (userMessage) {
+                chatBox.insertAdjacentHTML('beforeend', `
+                    <div class="chat-message-wrapper role-user">
+                        <div class="chat-message"><p>${userMessage}</p></div>
+                    </div>
+                `);
+                chatBox.appendChild(loadingDots);
+                loadingDots.style.display = 'flex';
+                chatBox.scrollTop = chatBox.scrollHeight;
+                setTimeout(() => {
+                    messageInput.value = '';
+                }, 0);
+            } else {
+                event.preventDefault();
+            }
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+    </script>
+</body>
+</html>
